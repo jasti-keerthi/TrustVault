@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TrustVault Audit Logs</title>
+</head>
+<body>
+    <h1>TrustVault Audit Trail</h1>
+    <p>Recent document activity</p>
+
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Document ID</th>
+                <th>Action</th>
+                <th>Outcome</th>
+                <th>Date and Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>
+                    {% if log.actor %}
+                        {{ log.actor.username }}
+                    {% else %}
+                        Deleted user
+                    {% endif %}
+                </td>
+                <td>
+                    {% if log.document %}
+                        {{ log.document.id }}
+                    {% else %}
+                        Deleted document
+                    {% endif %}
+                </td>
+                <td>{{ log.action }}</td>
+                <td>{{ log.outcome }}</td>
+                <td>{{ log.timestamp|date:"d M Y, H:i:s" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No audit records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="{% url 'upload_document' %}">Back to Documents</a></p>
+</body>
+</html>

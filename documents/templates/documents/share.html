@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Share Document - TrustVault</title>
+</head>
+<body>
+    <h1>TrustVault</h1>
+    <h2>Share Document</h2>
+
+    <p>Document: {{ document.title }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Grant Access</button>
+    </form>
+
+    <p>
+        <a href="{% url 'upload_document' %}">
+            Back to Upload
+        </a>
+    </p>
+</body>
+</html>
+<h2>Users with access</h2>
+
+{% for permission in document.permissions.select_related %}
+    <p>
+        {{ permission.user.username }}
+        — {{ permission.get_permission_display }}
+
+        <form
+            method="post"
+            action="{% url 'revoke_access' document.id permission.user.id %}"
+            style="display: inline;"
+        >
+            {% csrf_token %}
+            <button type="submit">Revoke Access</button>
+        </form>
+    </p>
+{% empty %}
+    <p>No users have access yet.</p>
+{% endfor %}
+
+<hr>
+
+<h2>Users with access</h2>
+
+{% for permission in permissions %}
+    <div style="margin-bottom: 15px;">
+        <strong>{{ permission.user.username }}</strong>
+        — {{ permission.get_permission_display }}
+
+        <form
+            method="post"
+            action="{% url 'revoke_access' document.id permission.user.id %}"
+            style="display: inline;"
+        >
+            {% csrf_token %}
+            <button type="submit">Revoke Access</button>
+        </form>
+    </div>
+{% empty %}
+    <p>No users have access to this document yet.</p>
+{% endfor %}
+
+<p>
+    <a href="{% url 'upload_document' %}">Back to Documents</a>
+</p>

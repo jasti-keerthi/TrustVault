@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TrustVault - My Documents</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        h1 {
+            color: #183b66;
+        }
+
+        section, .document-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #00000010;
+        }
+
+        input, textarea, select {
+            max-width: 100%;
+        }
+
+        button, .action-link {
+            display: inline-block;
+            padding: 10px 14px;
+            margin: 5px 5px 5px 0;
+            border: none;
+            border-radius: 5px;
+            background: #183b66;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .document-card p {
+            overflow-wrap: anywhere;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔐 TrustVault</h1>
+    <p>Secure document sharing with an audit trail.</p>
+
+    <section>
+        <h2>Upload a Document</h2>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Upload Document</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>My Documents</h2>
+
+        {% for document in documents %}
+            <div class="document-card">
+                <h3>{{ document.title }}</h3>
+
+                {% if document.description %}
+                    <p>{{ document.description }}</p>
+                {% endif %}
+
+                {% if document.category %}
+                    <p>Category: {{ document.category }}</p>
+                {% endif %}
+
+                <p>Uploaded: {{ document.created_at|date:"d M Y, H:i" }}</p>
+
+                <a class="action-link"
+                   href="{% url 'download_document' document.id %}">
+                    Download
+                </a>
+
+                <a class="action-link"
+                   href="{% url 'share_document' document.id %}">
+                    Share
+                </a>
+            </div>
+        {% empty %}
+            <p>You haven't uploaded any documents yet.</p>
+        {% endfor %}
+    </section>
+
+    <p>
+        <a href="{% url 'logout' %}">Log out</a>
+    </p>
+</body>
+</html>
