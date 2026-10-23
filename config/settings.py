@@ -58,6 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -89,12 +90,27 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+import dj_database_url
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
 
 
 # Password validation
@@ -145,5 +161,9 @@ MAILERS = {
 }
 LOGIN_REDIRECT_URL = "/documents/upload/"
 LOGOUT_REDIRECT_URL = "/accounts/login/"
-# Keep uploaded documents private.
-PRIVATE_DOCUMENTS_ROOT = BASE_DIR / "private_documents"
+
+# Uploaded documents must only be accessed through permission-checked views.
+# Keep MEDIA_URL unrouted; do not expose uploaded files publicly.
+MEDIA_ROOT = Path(
+    os.environ.get("DJANGO_MEDIA_ROOT", str(BASE_DIR))
+)
