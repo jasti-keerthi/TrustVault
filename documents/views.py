@@ -18,6 +18,8 @@ from django.views.decorators.http import require_GET, require_http_methods
 
 from .forms import DocumentShareForm, DocumentUploadForm
 from .models import AuditLog, Document, DocumentPermission
+def home(request):
+    return render(request, "documents/home.html")
 
 
 def record_audit(actor, document, action, outcome):

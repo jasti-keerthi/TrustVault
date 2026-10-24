@@ -25,4 +25,5 @@ path(
     views.revoke_access,
     name="revoke_access",
 ),
+path("", views.home, name="home"),
 ]
